@@ -21,6 +21,8 @@ class TodoList extends StatefulWidget {
 
 class TodoListState extends State<TodoList> {
   List<String> _todoItems = [];
+  final ScrollController _scrollController = ScrollController();
+  bool _needScroll = false;
 
   // This will be called each time the + button is pressed
   void _addTodoItem(String task) {
@@ -38,16 +40,17 @@ class TodoListState extends State<TodoList> {
         // list to fill up its available space, which is most likely more than the
         // number of todo items we have. So, we need to check the index is OK.
         if (index < _todoItems.length) {
-          return _buildTodoItem(_todoItems[index]);
+          return _buildTodoItem(_todoItems[index], index);
         }
       },
     );
   }
 
   // Build a single todo item
-  Widget _buildTodoItem(String todoText) {
+  Widget _buildTodoItem(String todoText, int index) {
     return new ListTile(
       title: new Text(todoText),
+      onTap: () => _promptRemoveTodoItem(index),
     );
   }
 
@@ -85,5 +88,31 @@ class TodoListState extends State<TodoList> {
                 contentPadding: const EdgeInsets.all(16.0)),
           ));
     }));
+  }
+
+  void _removeTodoItem(int index) {
+    setState(() => _todoItems.removeAt(index));
+  }
+
+  void _promptRemoveTodoItem(int index) {
+    showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return new AlertDialog(
+              title: new Text('Mark "${_todoItems[index]}" as done?'),
+              actions: <Widget>[
+                new FlatButton(
+                  onPressed: () => Navigator.of(context).pop(),
+                  child: new Text('CANCEL'),
+                ),
+                new FlatButton(
+                  onPressed: () {
+                    _removeTodoItem(index);
+                    Navigator.of(context).pop();
+                  },
+                  child: new Text('MARK AS DONE'),
+                )
+              ]);
+        });
   }
 }
