@@ -54,8 +54,20 @@ class TodoListState extends State<TodoList> {
     );
   }
 
+  // Scrolls to the bottom of the list
+  _scrollToEnd() async {
+    if (_needScroll) {
+      _scrollController.animateTo(_scrollController.position.maxScrollExtent,
+          duration: Duration(milliseconds: 200), curve: Curves.easeInOut);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
+    if (_needScroll) {
+      WidgetsBinding.instance.addPostFrameCallback((_) => _scrollToEnd());
+      _needScroll = false;
+    }
     return new Scaffold(
       appBar: new AppBar(title: new Text('Todo List')),
       body: _buildTodoList(),
@@ -68,6 +80,8 @@ class TodoListState extends State<TodoList> {
   }
 
   void _pushAddTodoScreen() {
+    //Flag to Flutter that a scroll is needed
+    _needScroll = true;
     // Push this page onto the stack
     Navigator.of(context).push(
         // MaterialPageRoute will automatically animate the screen entry, as well
@@ -82,6 +96,8 @@ class TodoListState extends State<TodoList> {
             onSubmitted: (val) {
               _addTodoItem(val);
               Navigator.pop(context);
+              WidgetsBinding.instance
+                  .addPostFrameCallback((_) => _scrollToEnd());
             },
             decoration: new InputDecoration(
                 hintText: 'Enter something to do...',
