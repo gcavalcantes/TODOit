@@ -57,10 +57,9 @@ class TodoListState extends State<TodoList> {
   }
 
   @override
-  Widget build(BuildContext context) {
+  build(BuildContext context) {
     if (_needScroll) {
       WidgetsBinding.instance.addPostFrameCallback((_) => _scrollToEnd());
-      _needScroll = false;
     }
     return new Scaffold(
       appBar: new AppBar(title: new Text('Todo List')),
@@ -111,11 +110,11 @@ class TodoListState extends State<TodoList> {
           return new AlertDialog(
               title: new Text('Mark "${_todoItems[index]}" as done?'),
               actions: <Widget>[
-                new FlatButton(
+                new TextButton(
                   onPressed: () => Navigator.of(context).pop(),
                   child: new Text('CANCEL'),
                 ),
-                new FlatButton(
+                new TextButton(
                   onPressed: () {
                     _removeTodoItem(index);
                     Navigator.of(context).pop();
